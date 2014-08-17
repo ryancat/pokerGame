@@ -1,0 +1,22 @@
+{
+	"name": "pokerGame",
+	"version": "0.0.0",
+	"description": "A general poker game",
+	"main": "dist/pokerGame.js",
+	"authors": [
+		"Ryan Chen <ryan.chen@turn.com>"
+	],
+	"license": "Apache2",
+	"dependencies": {
+		"angular": "1.0.8",
+		"lodash": "^2.4"
+	},
+	"devDependencies": {
+		"angular-mocks": "~1.0.8"
+	},
+	"ignore": [
+		"test",
+		"Gruntfile.coffee",
+		"demo"
+	]
+}

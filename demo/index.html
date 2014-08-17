@@ -1,0 +1,35 @@
+<!doctype html>
+<html ng-app="demo">
+<head>
+
+	<meta charset="utf-8">
+
+	<title>pokerGame demo</title>
+
+	<link rel="stylesheet" href="../dist/pokerGame.css">
+
+	<style>
+
+		/* ... */
+
+	</style>
+
+</head>
+<body ng-controller="mainCtrl">
+	
+	<script src="../bower_components/lodash/dist/lodash.js"></script>
+	<script src="../bower_components/angular/angular.js"></script>
+	<script src="../dist/pokerGame.js"></script>
+	<script>
+
+		angular
+		.module('demo', ['turn/pokergame'])
+		.controller('mainCtrl', function ($scope) {
+
+			// ...
+			
+		});
+
+	</script>
+</body>
+</html>
