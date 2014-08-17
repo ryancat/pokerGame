@@ -6,28 +6,101 @@
 
 	<title>pokerGame demo</title>
 
+	<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
 	<link rel="stylesheet" href="../dist/pokerGame.css">
 
 	<style>
 
-		/* ... */
+
 
 	</style>
 
 </head>
 <body ng-controller="mainCtrl">
 	
+	<div class="page-header clearfix header">
+		<div class="pull-left"> 
+			<h1 class="">Poker game table #{{ tableId || '1' }}</h1>
+		</div>
+		<div ng-controller="DropdownCtrl" class="pull-right">
+			<div class="btn-group" dropdown is-open="status.isopen">
+				<button type="button" class="btn btn-default dropdown-toggle" ng-disabled="disabled">
+					Rules <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li ng-repeat="rule in rules"> {{ rule.name }} </li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default left-panel">
+
+		<div class="panel-heading">
+			<div class="panel-title">Game log</div>
+		</div>
+
+		<div class="panel-body">
+			Logs go here
+		</div>
+
+	</div>
+
+	<div class="stage">
+	</div>
+	
 	<script src="../bower_components/lodash/dist/lodash.js"></script>
 	<script src="../bower_components/angular/angular.js"></script>
+	<script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 	<script src="../dist/pokerGame.js"></script>
 	<script>
 
 		angular
-		.module('demo', ['turn/pokergame'])
+		.module('demo', ['pokerGame'])
 		.controller('mainCtrl', function ($scope) {
 
-			// ...
+			$scope.deckConfig = {
+
+			};
+
+			$scope.cardConfig = {
+
+			};
+
+			$scope.playerConfig = {
+
+			};
+
+			$scope.ruleConfig = {
+
+			};
+
+			$scope.customAlgorithm = {
+
+			};
 			
+		})
+		.controller('DropdownCtrl', function ($scope) {
+			$scope.items = [
+				'The first choice!',
+				'And another choice for you.',
+				'but wait! A third!'
+			];
+
+			$scope.status = {
+				isopen: false
+			};
+
+			$scope.toggled = function(open) {
+				console.log('Dropdown is now: ', open);
+			};
+
+			$scope.toggleDropdown = function($event) {
+				$event.preventDefault();
+				$event.stopPropagation();
+				$scope.status.isopen = !$scope.status.isopen;
+			};
+
 		});
 
 	</script>

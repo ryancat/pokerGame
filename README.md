@@ -1,4 +1,4 @@
-pokerGame [![Build Status](https://travis-ci.org/turn/pokerGame.svg?branch=master)](https://travis-ci.org/turn/pokerGame) [![Coverage Status](https://img.shields.io/coveralls/turn/pokerGame.svg)](https://coveralls.io/r/turn/pokerGame)
+pokerGame [![Build Status](https://travis-ci.org/ryancat/pokerGame.svg?branch=master)](https://travis-ci.org/ryancat/pokerGame) [![Coverage Status](https://img.shields.io/coveralls/ryancat/pokerGame.svg)](https://coveralls.io/r/ryancat/pokerGame)
 =========
 
 ### dependencies
@@ -28,7 +28,7 @@ pokerGame [![Build Status](https://travis-ci.org/turn/pokerGame.svg?branch=maste
 
 ```js
 angular
-.module('foo', ['turn/pokergame'])
+.module('foo', ['pokerGame'])
 .controller('fooCtrl', function ($scope) {
 	
 	// ...

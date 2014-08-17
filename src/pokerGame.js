@@ -1,11 +1,18 @@
 angular
-.module('turn/pokergame', ['pokergameTemplate'])
-.value('pokergameOptions', {
+.module('pokerGame', ['pokerGameTemplate'])
+.value('pokerGameOptions', {
 
 	// ...
 	
 })
-.directive('pokergame', function () {
+
+.factory('PokerGameCard', require('./js/factories/pokerGameCardFactory'))
+.factory('PokerGameDeck', require('./js/factories/pokerGameDeckFactory'))
+.factory('PokerGamePlayer', require('./js/factories/pokerGamePlayerFactory'))
+
+.directive('pokerGameCard', require('./js/directive/pokerGameCardDirective'))
+
+.directive('pokerGame', function () {
 
 	return {
 		restrict: '',

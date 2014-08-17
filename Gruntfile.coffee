@@ -10,13 +10,14 @@ module.exports = (grunt) ->
 		'grunt-coveralls'
 		'grunt-html2js'
 		'grunt-ngmin'
+		'grunt-browserify'
 	]
 	.forEach grunt.loadNpmTasks
 
 	# task sets
-	build = ['html2js', 'ngmin', 'concat', 'sass', 'clean']
-	test = ['html2js', 'coffee', 'jasmine:unit']
-	testAndBuild = ['html2js', 'coffee', 'jasmine:unit', 'ngmin', 'concat', 'sass', 'clean']
+	build = ['html2js', 'browserify', 'ngmin', 'concat', 'sass', 'clean']
+	test = ['html2js', 'browserify', 'coffee', 'jasmine:unit']
+	testAndBuild = ['html2js', 'browserify', 'coffee', 'jasmine:unit', 'ngmin', 'concat', 'sass', 'clean']
 	run = ['default', 'watch']
 
 	# task defs
@@ -30,8 +31,9 @@ module.exports = (grunt) ->
 			]
 
 		coffee:
-			files:
-				'test/test.js': 'test/test.coffee'
+			compile:
+				files:
+					'test/unit.js': 'test/unit.coffee'
 
 		concat:
 			main:
@@ -50,7 +52,7 @@ module.exports = (grunt) ->
 				dest: './dist/template.js'
 			options:
 				base: './src/html'
-				module: 'pokergameTemplate'
+				module: 'pokerGameTemplate'
 
 		jasmine:
 			coverage:
@@ -82,7 +84,7 @@ module.exports = (grunt) ->
 						'./dist/template.js'
 					]
 			unit:
-				src: './src/pokerGame.js'
+				src: './dist/pokerGame.js'
 				options:
 					specs: './test/unit.js'
 					vendor: [
@@ -95,18 +97,23 @@ module.exports = (grunt) ->
 
 		ngmin:
 			main:
-				src: ['./src/pokerGame.js']
+				src: ['./dist/pokerGame.js']
 				dest: './dist/pokerGame.js'
 
 		sass:
 			main:
 				files:
-					'dist/pokerGame.css': 'src/pokerGame.scss'
+					'dist/pokerGame.css': 'src/style/pokerGame.scss'
+
+		browserify: 
+			main:
+				files:
+					'dist/pokerGame.js': 'src/*.js'
 
 		watch:
 			main:
 				files: [
-					'./src/*'
+					'./src/**/*'
 					'./bower_components/*'
 					'./node_modules/*'
 				]
@@ -115,7 +122,7 @@ module.exports = (grunt) ->
 					interrupt: true
 					spawn: false
 			test:
-				files: './test/*.js'
+				files: './test/*.coffee'
 				tasks: test
 				options:
 					interrupt: true

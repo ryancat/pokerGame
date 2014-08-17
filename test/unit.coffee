@@ -1,18 +1,18 @@
 describe 'pokerGame', ->
 
-	beforeEach (module 'turn/pokergame')
+	beforeEach (module 'pokerGame')
 	
-	beforeEach ->
+	# beforeEach ->
 		
-		inject ($compile, $rootScope) =>
+	# 	inject ($compile, $rootScope) =>
 
-			@scope = do $rootScope.$new
-			@element = angular.element """
-			"""
+	# 		@scope = do $rootScope.$new
+	# 		@element = angular.element """
+	# 		"""
 
-			($compile @element) @scope
-			do @scope.$digest
-			@scope = do @element.scope
+	# 		($compile @element) @scope
+	# 		do @scope.$digest
+	# 		@scope = do @element.scope
 
 
 	#########################################

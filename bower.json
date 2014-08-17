@@ -1,6 +1,6 @@
 {
 	"name": "pokerGame",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "A general poker game",
 	"main": "dist/pokerGame.js",
 	"authors": [
@@ -8,11 +8,11 @@
 	],
 	"license": "Apache2",
 	"dependencies": {
-		"angular": "1.0.8",
+		"angular": "~1.2.x",
 		"lodash": "^2.4"
 	},
 	"devDependencies": {
-		"angular-mocks": "~1.0.8"
+		"angular-mocks": "~1.2.0"
 	},
 	"ignore": [
 		"test",
