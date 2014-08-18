@@ -6,12 +6,24 @@ angular
 	
 })
 
-.factory('PokerGameCard', require('./js/factories/pokerGameCardFactory'))
-.factory('PokerGameDeck', require('./js/factories/pokerGameDeckFactory'))
-.factory('PokerGamePlayer', require('./js/factories/pokerGamePlayerFactory'))
+.filter('pokerGameKindOnCardFilter', require('./js/filters/pokerGameKindOnCardFilter'))
 
-.directive('pokerGameCard', require('./js/directive/pokerGameCardDirective'))
+.controller('pokerGamePlayerListController', require('./js/controllers/pokerGamePlayerListController'))
+.controller('pokerGameCardTableController', require('./js/controllers/pokerGameCardTableController'))
+.controller('pokerGameMyCardsController', require('./js/controllers/pokerGameMyCardsController'))
 
+.factory('PokerGameCardFactory', require('./js/factories/pokerGameCardFactory'))
+.factory('PokerGameDeckFactory', require('./js/factories/pokerGameDeckFactory'))
+.factory('PokerGamePlayerFactory', require('./js/factories/pokerGamePlayerFactory'))
+
+.service('pokerGameSuitEnum', require('./js/services/pokerGameSuitEnumService'))
+.service('pokerGameKindEnum', require('./js/services/pokerGameKindEnumService'))
+.service('pokerGameMyCardsModal', require('./js/services/pokerGameMyCardsModalService'))
+.service('pokerGamePlayerListModal', require('./js/services/pokerGamePlayerListModalService'))
+.service('pokerGameCardTableModal', require('./js/services/pokerGameCardTableModalService'))
+
+.directive('pokerGameCard', require('./js/directives/pokerGameCardDirective'))
+.directive('pokerGamePlayer', require('./js/directives/pokerGamePlayerDirective'))
 .directive('pokerGame', function () {
 
 	return {

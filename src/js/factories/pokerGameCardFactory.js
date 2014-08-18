@@ -6,9 +6,10 @@
 
 module.exports = function (
     $log,
-    pokerGameSuitEnum) {
+    pokerGameSuitEnum,
+    pokerGameKindEnum) {
 
-    var PokerGameCard = function (cardConfig) {
+    var PokerGameCardFactory = function (cardConfig) {
 
         /**
          * @public
@@ -37,7 +38,7 @@ module.exports = function (
 
     };
 
-    PokerGameCard.prototype = {
+    PokerGameCardFactory.prototype = {
 
             setSuit: function (suit) {
 
@@ -54,10 +55,32 @@ module.exports = function (
 
                 return _suit;
 
+            },
+
+
+            isRedCard: function () {
+                return this.suit === pokerGameSuitEnum.HEART || 
+                this.suit === pokerGameSuitEnum.DIAMOND ||
+                this.kind === pokerGameKindEnum.JOKER_RED;
+            },
+
+            isBlackCard: function () {
+                return this.suit === pokerGameSuitEnum.SPADE || 
+                this.suit === pokerGameSuitEnum.CLUB ||
+                this.kind === pokerGameKindEnum.JOKER_BLACK;
+            },
+            /**
+             * Check if the given card is joker card
+             */
+            isJoker: function () {
+
+                return pokerGameKindEnum.isJoker(this.kind);
+
             }
+
 
     };
 
-    return PokerGameCard;
+    return PokerGameCardFactory;
 
 };

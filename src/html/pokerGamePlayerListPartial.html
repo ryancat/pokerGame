@@ -1,0 +1,11 @@
+<div ng-controller="pokerGamePlayerListController" class="player-list">
+    This is player list
+    <ul>
+        <li ng-repeat="player in pokerGamePlayerListModal.getPlayers()" class="pull-left">
+            <div poker-game-player
+                player-name="player.name"
+                player-id="player.id"></div>
+        </li>
+    </ul>
+
+</div>

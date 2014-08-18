@@ -8,7 +8,7 @@ module.exports = function (
     $log,
     pokerGameKindEnum) {
 
-    var PokerGameDeck = function (deckConfig) {
+    var PokerGameDeckFactory = function (deckConfig) {
 
         angular.extend(this, {
 
@@ -28,12 +28,12 @@ module.exports = function (
 
     };
 
-    PokerGameCard.prototype = {
+    PokerGameDeckFactory.prototype = {
 
         
 
     };
 
-    return PokerGameCard;
+    return PokerGameDeckFactory;
 
 };

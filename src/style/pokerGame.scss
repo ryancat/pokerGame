@@ -2,8 +2,65 @@
     margin: 10px;
 }
 
+.content {
+    margin: 10px;
+}
+
 .left-panel {
     width: 300px;
     height: 300px;
-    margin: 10px;
+}
+
+.player-list {
+    li {
+        list-style: none;
+    }
+}
+
+.poker-game-player {
+    width: 50px;
+    margin: 4px;
+
+    .player-avatar {
+        font-size: 38px;
+    }
+
+    .current-player-arrow {
+        text-align: center;
+        opacity: 0;
+
+        .active {
+            opacity: 1;
+        }
+    }
+
+    .player-avatar {
+        height: 50px;
+        margin-bottom: 2px;
+    }
+
+    .player-tag {
+        width: 50px;
+        height: 20px;
+        margin: 0;
+        text-align: center;
+    }
+}
+
+.poker-game-card {
+
+    width: 45px;
+    height: 50px;
+    border: 1px solid;
+    border-radius: 4px;
+    margin: 2px;
+    cursor: pointer;
+
+    &.red-card {
+        color: red;
+    }
+
+    &.black-card {
+        color: black;
+    }
 }

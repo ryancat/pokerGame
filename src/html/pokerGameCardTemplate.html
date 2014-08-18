@@ -1,5 +1,6 @@
-<div class="poker-game-card">
+<div class="poker-game-card" ng-class="{ 'red-card': card.isRedCard(), 'black-card': card.isBlackCard() }">
+    <span class="card-suit" ng-class="{ 'icon-spades': suit == pokerGameSuitEnum.SPADE, 'icon-heart': suit == pokerGameSuitEnum.HEART, 'icon-clubs': suit == pokerGameSuitEnum.CLUB, 'icon-diamonds': suit == pokerGameSuitEnum.DIAMOND }" ng-hide="card.isJoker()"></span>
+    
+    <span class="card-kind">{{ kind | pokerGameKindOnCardFilter }}</span>
 
-    
-    
 </div>

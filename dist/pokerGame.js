@@ -25,12 +25,129 @@
   1: [
     function (require, module, exports) {
       /**
+ * @fileOverview The controller for card table section
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function ($scope, pokerGameSuitEnum, pokerGameKindEnum, pokerGameCardTableModal) {
+        angular.extend($scope, {
+          suit: pokerGameSuitEnum.getRandomSuit(),
+          kind: pokerGameKindEnum.getRandomKind()
+        });
+      };
+    },
+    {}
+  ],
+  2: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The controller for my card section
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function ($scope, pokerGameSuitEnum, pokerGameKindEnum, pokerGameMyCardsModal) {
+        angular.extend($scope, {
+          suit: pokerGameSuitEnum.getRandomSuit(),
+          kind: pokerGameKindEnum.getRandomKind()
+        });
+      };
+    },
+    {}
+  ],
+  3: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The controller for player list section
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function ($scope, $log, pokerGamePlayerListModal) {
+        angular.extend($scope, {
+          pokerGamePlayerListModal: pokerGamePlayerListModal,
+          init: function () {
+            var playerConfig = $scope.playerConfig || {};
+            pokerGamePlayerListModal.setPlayers(playerConfig.players);
+            console.log('The player config', playerConfig);
+          }
+        });
+        $scope.init();
+      };
+    },
+    {}
+  ],
+  4: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The card directive
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function (PokerGameCardFactory, pokerGameSuitEnum, pokerGameKindEnum) {
+        return {
+          restrict: 'EA',
+          scope: {
+            suit: '=',
+            kind: '='
+          },
+          templateUrl: 'pokerGameCardTemplate.html',
+          link: function (scope, element) {
+            angular.extend(scope, {
+              card: new PokerGameCardFactory({
+                suit: scope.suit,
+                kind: scope.kind
+              }),
+              pokerGameSuitEnum: pokerGameSuitEnum,
+              init: function () {
+              },
+              isJoker: function () {
+                return scope.card.isJoker();
+              }
+            });
+            console.log(scope, scope.isJoker());
+          }
+        };
+      };
+    },
+    {}
+  ],
+  5: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The player directive
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function (pokerGameSuitEnum, pokerGameKindEnum, PokerGamePlayerFactory) {
+        return {
+          restrict: 'EA',
+          scope: {
+            playerName: '=',
+            playerId: '='
+          },
+          templateUrl: 'pokerGamePlayerTemplate.html',
+          link: function (scope, element) {
+            angular.extend(scope, {
+              player: new PokerGamePlayerFactory({
+                name: scope.playerName,
+                id: scope.playerId
+              }),
+              isCurrentPlayer: false
+            });
+          }
+        };
+      };
+    },
+    {}
+  ],
+  6: [
+    function (require, module, exports) {
+      /**
  * @fileoverview The card modal service
  * @ngInject
  * @author rchen
  */
-      module.exports = function ($log, pokerGameSuitEnum) {
-        var PokerGameCard = function (cardConfig) {
+      module.exports = function ($log, pokerGameSuitEnum, pokerGameKindEnum) {
+        var PokerGameCardFactory = function (cardConfig) {
           /**
          * @public
          */
@@ -41,7 +158,7 @@
             belongsToPlayer: undefined
           }, cardConfig);
         };
-        PokerGameCard.prototype = {
+        PokerGameCardFactory.prototype = {
           setSuit: function (suit) {
             if (!pokerGameSuitEnum.has(suit)) {
               $log.warn('Invalid suit');
@@ -51,14 +168,23 @@
           },
           getSuit: function () {
             return _suit;
+          },
+          isRedCard: function () {
+            return this.suit === pokerGameSuitEnum.HEART || this.suit === pokerGameSuitEnum.DIAMOND || this.kind === pokerGameKindEnum.JOKER_RED;
+          },
+          isBlackCard: function () {
+            return this.suit === pokerGameSuitEnum.SPADE || this.suit === pokerGameSuitEnum.CLUB || this.kind === pokerGameKindEnum.JOKER_BLACK;
+          },
+          isJoker: function () {
+            return pokerGameKindEnum.isJoker(this.kind);
           }
         };
-        return PokerGameCard;
+        return PokerGameCardFactory;
       };
     },
     {}
   ],
-  2: [
+  7: [
     function (require, module, exports) {
       /**
  * @fileoverview The deck modal service
@@ -66,7 +192,7 @@
  * @author rchen
  */
       module.exports = function ($log, pokerGameKindEnum) {
-        var PokerGameDeck = function (deckConfig) {
+        var PokerGameDeckFactory = function (deckConfig) {
           angular.extend(this, {
             spadeCards: [],
             heartCards: [],
@@ -75,13 +201,13 @@
             jokerCards: []
           }, deckConfig);
         };
-        PokerGameCard.prototype = {};
-        return PokerGameCard;
+        PokerGameDeckFactory.prototype = {};
+        return PokerGameDeckFactory;
       };
     },
     {}
   ],
-  3: [
+  8: [
     function (require, module, exports) {
       /**
  * @fileoverview The player modal service
@@ -89,7 +215,7 @@
  * @author rchen
  */
       module.exports = function ($log) {
-        var PokerGamePlayer = function (playerConfig) {
+        var PokerGamePlayerFactory = function (playerConfig) {
           angular.extend(this, {
             id: '',
             name: '',
@@ -98,15 +224,186 @@
             playOrder: 1
           }, playerConfig);
         };
-        PokerGameCard.prototype = {};
-        return PokerGameCard;
+        PokerGamePlayerFactory.prototype = {};
+        return PokerGamePlayerFactory;
       };
     },
     {}
   ],
-  4: [
+  9: [
     function (require, module, exports) {
-      angular.module('pokerGame', ['pokerGameTemplate']).value('pokerGameOptions', {}).factory('PokerGameCard', require('./js/factories/pokerGameCardFactory')).factory('PokerGameDeck', require('./js/factories/pokerGameDeckFactory')).factory('PokerGamePlayer', require('./js/factories/pokerGamePlayerFactory')).directive('pokerGameCard').directive('pokerGame', function () {
+      /**
+ * @fileoverview The filter for showing right kind format on card
+ * @ngInject
+ * @author rchen
+ */
+      // global: _, module
+      module.exports = function ($log, pokerGameKindEnum) {
+        return function (kind) {
+          if (!pokerGameKindEnum.has(kind)) {
+            $log.warn('Invalid kind');
+            return;
+          }
+          if (pokerGameKindEnum.isJoker(kind)) {
+            return 'Joker';
+          } else {
+            return kind;
+          }
+        };
+      };
+    },
+    {}
+  ],
+  10: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The card table section data modal
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function () {
+        angular.extend(this, {});
+      };
+    },
+    {}
+  ],
+  11: [
+    function (require, module, exports) {
+      /**
+ * @fileoverview The card deck enum
+ * @ngInject
+ * @author rchen
+ */
+      // global: _, module
+      module.exports = function () {
+        var pokerGameKindEnum = Object.freeze({
+            ACE: '1',
+            TWO: '2',
+            THREE: '3',
+            FOUR: '4',
+            FIVE: '5',
+            SIX: '6',
+            SEVEN: '7',
+            EIGHT: '8',
+            NINE: '9',
+            TEN: '10',
+            JACK: 'J',
+            QUEEN: 'Q',
+            KING: 'K',
+            JOKER_RED: 'R Joker',
+            JOKER_BLACK: 'B Joker'
+          });
+        angular.extend(this, {
+          ACE: pokerGameKindEnum.Ace,
+          TWO: pokerGameKindEnum.TWO,
+          THREE: pokerGameKindEnum.THREE,
+          FOUR: pokerGameKindEnum.FOUR,
+          FIVE: pokerGameKindEnum.FIVE,
+          SIX: pokerGameKindEnum.SIX,
+          SEVEN: pokerGameKindEnum.SEVEN,
+          EIGHT: pokerGameKindEnum.EIGHT,
+          NINE: pokerGameKindEnum.NINE,
+          TEN: pokerGameKindEnum.TEN,
+          JACK: pokerGameKindEnum.JACK,
+          QUEEN: pokerGameKindEnum.QUEEN,
+          KING: pokerGameKindEnum.KING,
+          JOKER_RED: pokerGameKindEnum.JOKER_RED,
+          JOKER_BLACK: pokerGameKindEnum.JOKER_BLACK,
+          has: function (kind) {
+            return _.values(pokerGameKindEnum).indexOf(kind) >= 0;
+          },
+          getRandomKind: function () {
+            var enumKeys = _.keys(pokerGameKindEnum), enumKeysLength = enumKeys.length;
+            return pokerGameKindEnum[enumKeys[_.random(0, enumKeysLength - 1)]];
+          },
+          isJoker: function (kind) {
+            return kind === pokerGameKindEnum.JOKER_BLACK || kind === pokerGameKindEnum.JOKER_RED;
+          }
+        });
+      };
+    },
+    {}
+  ],
+  12: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The my cards section data modal
+ * @ngInject
+ * @author rchen
+ */
+      module.exports = function () {
+        angular.extend(this, {});
+      };
+    },
+    {}
+  ],
+  13: [
+    function (require, module, exports) {
+      /**
+ * @fileOverview The player list section data modal
+ * @ngInject
+ * @author rchen
+ */
+      // Global: _, module
+      module.exports = function ($log, PokerGamePlayerFactory) {
+        var players = [];
+        angular.extend(this, {
+          getPlayers: function () {
+            return players;
+          },
+          setPlayers: function (playerList) {
+            if (!angular.isArray(playerList)) {
+              $log.warn('Invalid playerList');
+              return;
+            }
+            this.resetPlayers();
+            playerList.forEach(function (player) {
+              players.push(new PokerGamePlayerFactory(player));
+            });
+          },
+          resetPlayers: function () {
+            players.length = 0;
+          }
+        });
+      };
+    },
+    {}
+  ],
+  14: [
+    function (require, module, exports) {
+      /**
+ * @fileoverview The card suit enum
+ * @ngInject
+ * @author rchen
+ */
+      // global: _, module
+      module.exports = function () {
+        var pokerGameSuitEnum = Object.freeze({
+            SPADE: 'spade',
+            HEART: 'heart',
+            CLUB: 'club',
+            DIAMOND: 'diamond'
+          });
+        angular.extend(this, {
+          SPADE: pokerGameSuitEnum.SPADE,
+          HEART: pokerGameSuitEnum.HEART,
+          CLUB: pokerGameSuitEnum.CLUB,
+          DIAMOND: pokerGameSuitEnum.DIAMOND,
+          has: function (suit) {
+            return _.values(pokerGameSuitEnum).indexOf(suit) >= 0;
+          },
+          getRandomSuit: function () {
+            var enumKeys = _.keys(pokerGameSuitEnum), enumKeysLength = enumKeys.length;
+            return pokerGameSuitEnum[enumKeys[_.random(0, enumKeysLength - 1)]];
+          }
+        });
+      };
+    },
+    {}
+  ],
+  15: [
+    function (require, module, exports) {
+      angular.module('pokerGame', ['pokerGameTemplate']).value('pokerGameOptions', {}).filter('pokerGameKindOnCardFilter', require('./js/filters/pokerGameKindOnCardFilter')).controller('pokerGamePlayerListController', require('./js/controllers/pokerGamePlayerListController')).controller('pokerGameCardTableController', require('./js/controllers/pokerGameCardTableController')).controller('pokerGameMyCardsController', require('./js/controllers/pokerGameMyCardsController')).factory('PokerGameCardFactory', require('./js/factories/pokerGameCardFactory')).factory('PokerGameDeckFactory', require('./js/factories/pokerGameDeckFactory')).factory('PokerGamePlayerFactory', require('./js/factories/pokerGamePlayerFactory')).service('pokerGameSuitEnum', require('./js/services/pokerGameSuitEnumService')).service('pokerGameKindEnum', require('./js/services/pokerGameKindEnumService')).service('pokerGameMyCardsModal', require('./js/services/pokerGameMyCardsModalService')).service('pokerGamePlayerListModal', require('./js/services/pokerGamePlayerListModalService')).service('pokerGameCardTableModal', require('./js/services/pokerGameCardTableModalService')).directive('pokerGameCard', require('./js/directives/pokerGameCardDirective')).directive('pokerGamePlayer', require('./js/directives/pokerGamePlayerDirective')).directive('pokerGame', function () {
         return {
           restrict: '',
           scope: {},
@@ -121,15 +418,93 @@
       });
     },
     {
-      './js/factories/pokerGameCardFactory': 1,
-      './js/factories/pokerGameDeckFactory': 2,
-      './js/factories/pokerGamePlayerFactory': 3
+      './js/controllers/pokerGameCardTableController': 1,
+      './js/controllers/pokerGameMyCardsController': 2,
+      './js/controllers/pokerGamePlayerListController': 3,
+      './js/directives/pokerGameCardDirective': 4,
+      './js/directives/pokerGamePlayerDirective': 5,
+      './js/factories/pokerGameCardFactory': 6,
+      './js/factories/pokerGameDeckFactory': 7,
+      './js/factories/pokerGamePlayerFactory': 8,
+      './js/filters/pokerGameKindOnCardFilter': 9,
+      './js/services/pokerGameCardTableModalService': 10,
+      './js/services/pokerGameKindEnumService': 11,
+      './js/services/pokerGameMyCardsModalService': 12,
+      './js/services/pokerGamePlayerListModalService': 13,
+      './js/services/pokerGameSuitEnumService': 14
     }
   ]
-}, {}, [4]));
-angular.module('pokerGameTemplate', ['pokerGame.html']);
+}, {}, [15]));
+angular.module('pokerGameTemplate', ['pokerGame.html', 'pokerGameCardTablePartial.html', 'pokerGameCardTemplate.html', 'pokerGameMyCardsPartial.html', 'pokerGamePlayerListPartial.html', 'pokerGamePlayerTemplate.html']);
 
 angular.module("pokerGame.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("pokerGame.html",
     "<div></div>");
+}]);
+
+angular.module("pokerGameCardTablePartial.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("pokerGameCardTablePartial.html",
+    "<div ng-controller=\"pokerGameCardTableController\" class=\"card-table\">\n" +
+    "\n" +
+    "    This is card table\n" +
+    "\n" +
+    "</div>");
+}]);
+
+angular.module("pokerGameCardTemplate.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("pokerGameCardTemplate.html",
+    "<div class=\"poker-game-card\" ng-class=\"{ 'red-card': card.isRedCard(), 'black-card': card.isBlackCard() }\">\n" +
+    "    <span class=\"card-suit\" ng-class=\"{ 'icon-spades': suit == pokerGameSuitEnum.SPADE, 'icon-heart': suit == pokerGameSuitEnum.HEART, 'icon-clubs': suit == pokerGameSuitEnum.CLUB, 'icon-diamonds': suit == pokerGameSuitEnum.DIAMOND }\" ng-hide=\"card.isJoker()\"></span>\n" +
+    "    \n" +
+    "    <span class=\"card-kind\">{{ kind | pokerGameKindOnCardFilter }}</span>\n" +
+    "\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("pokerGameMyCardsPartial.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("pokerGameMyCardsPartial.html",
+    "<div ng-controller=\"pokerGameMyCardsController\" class=\"my-cards-section\">\n" +
+    "\n" +
+    "    <span> This is my cards partial </span>\n" +
+    "\n" +
+    "    <div poker-game-card\n" +
+    "        suit=\"suit\"\n" +
+    "        kind=\"kind\" ></div>\n" +
+    "\n" +
+    "</div>");
+}]);
+
+angular.module("pokerGamePlayerListPartial.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("pokerGamePlayerListPartial.html",
+    "<div ng-controller=\"pokerGamePlayerListController\" class=\"player-list\">\n" +
+    "    This is player list\n" +
+    "    <ul>\n" +
+    "        <li ng-repeat=\"player in pokerGamePlayerListModal.getPlayers()\" class=\"pull-left\">\n" +
+    "            <div poker-game-player\n" +
+    "                player-name=\"player.name\"\n" +
+    "                player-id=\"player.id\"></div>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "\n" +
+    "</div>");
+}]);
+
+angular.module("pokerGamePlayerTemplate.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("pokerGamePlayerTemplate.html",
+    "<div class=\"poker-game-player\">\n" +
+    "\n" +
+    "    <div class=\"current-player-arrow\">\n" +
+    "        <span class=\"icon-arrow-down\" ng-class=\"{ 'active': isCurrentPlayer }\"></span>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"player-avatar thumbnail\">\n" +
+    "        <span class=\"icon-user\"></span>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"player-tag panel panel-default\">\n" +
+    "        <span class=\"player-tag-text\">{{ player.name }}</span>\n" +
+    "    </div>\n" +
+    "\n" +
+    "</div>");
 }]);

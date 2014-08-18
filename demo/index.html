@@ -7,6 +7,7 @@
 	<title>pokerGame demo</title>
 
 	<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+	<link rel="stylesheet" href="../bower_components/icomoon/style.css">
 	<link rel="stylesheet" href="../dist/pokerGame.css">
 
 	<style>
@@ -34,20 +35,30 @@
 		</div>
 	</div>
 
-	<div class="panel panel-default left-panel">
+	<div class="content clearfix">
+		<div class="panel panel-default left-panel pull-left">
 
-		<div class="panel-heading">
-			<div class="panel-title">Game log</div>
+			<div class="panel-heading">
+				<div class="panel-title">Game log</div>
+			</div>
+
+			<div class="panel-body">
+				Logs go here
+			</div>
+
 		</div>
 
-		<div class="panel-body">
-			Logs go here
+		<div class="stage pull-left">
+
+			<div ng-include="'pokerGamePlayerListPartial.html'"></div>
+
+			<div ng-include="'pokerGameCardTablePartial.html'"></div>
+
+			<div ng-include="'pokerGameMyCardsPartial.html'"></div>
+
 		</div>
-
 	</div>
-
-	<div class="stage">
-	</div>
+	
 	
 	<script src="../bower_components/lodash/dist/lodash.js"></script>
 	<script src="../bower_components/angular/angular.js"></script>
@@ -69,6 +80,19 @@
 
 			$scope.playerConfig = {
 
+				players: [{
+					name: 'Bob',
+					id: '123',
+					playOrder: 1
+				}, {
+					name: 'Alice',
+					id: '456',
+					playOrder: 2
+				}, {
+					name: 'Ryan',
+					id: '789',
+					playOrder: 3
+				}]
 			};
 
 			$scope.ruleConfig = {
