@@ -5,6 +5,7 @@
  */
 
 module.exports = function (
+    $log,
     PokerGameCardFactory,
     pokerGameSuitEnum,
     pokerGameKindEnum) {

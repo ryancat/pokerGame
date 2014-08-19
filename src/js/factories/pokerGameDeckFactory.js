@@ -6,25 +6,19 @@
 
 module.exports = function (
     $log,
-    pokerGameKindEnum) {
+    pokerGameSuitEnum) {
 
     var PokerGameDeckFactory = function (deckConfig) {
 
-        angular.extend(this, {
+        // Kinds of cards in different suits
+        // Order in array doesn't matter
+        this[pokerGameSuitEnum.SPADE] = [];
+        this[pokerGameSuitEnum.HEART] = [];
+        this[pokerGameSuitEnum.CLUB] = [];
+        this[pokerGameSuitEnum.DIAMOND] = [];
+        this[pokerGameSuitEnum.JOKER] = [];
 
-            // Kinds of cards in different suits
-            // Order in array doesn't matter
-            spadeCards: [],
-
-            heartCards: [],
-
-            clubCards: [],
-
-            diamondCards: [],
-
-            jokerCards: []
-
-        }, deckConfig);
+        angular.extend(this, deckConfig);
 
     };
 

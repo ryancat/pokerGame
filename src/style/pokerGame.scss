@@ -9,6 +9,10 @@
 .left-panel {
     width: 300px;
     height: 300px;
+
+    .panel-game-log {
+        height: 200px;
+    }
 }
 
 .player-list {
@@ -63,4 +67,8 @@
     &.black-card {
         color: black;
     }
+}
+
+li {
+    list-style: none
 }

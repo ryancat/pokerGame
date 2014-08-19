@@ -38,6 +38,28 @@ module.exports = function (
 
             players.length = 0;
 
+        },
+
+        getNumberOfPlayers: function () {
+
+            return players.length;
+
+        },
+
+        getPlayerById: function (playerId) {
+
+            return _.find(players, function (player) {
+                return player.id === playerId;
+            });
+
+        },
+
+        getCurrentPlayer: function () {
+
+            return _.find(players, function (player) {
+                return player.isCurrentPlayer;
+            });
+
         }
 
     });

@@ -14,10 +14,11 @@ module.exports = function (
         pokerGamePlayerListModal: pokerGamePlayerListModal,
 
         init: function () {
+
             var playerConfig = $scope.playerConfig || {};
 
             pokerGamePlayerListModal.setPlayers(playerConfig.players);
-            console.log('The player config', playerConfig);
+            
         }
 
     });

@@ -13,6 +13,7 @@ module.exports = function () {
         HEART: 'heart',
         CLUB: 'club',
         DIAMOND: 'diamond',
+        JOKER: 'joker'
     });
 
     angular.extend(this, {
@@ -23,6 +24,7 @@ module.exports = function () {
         HEART: pokerGameSuitEnum.HEART,
         CLUB: pokerGameSuitEnum.CLUB,
         DIAMOND: pokerGameSuitEnum.DIAMOND,
+        JOKER: pokerGameSuitEnum.jOKER,
         /**
          * Check if the given suit is valid enum item
          */

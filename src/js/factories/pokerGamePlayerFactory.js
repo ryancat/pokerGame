@@ -16,6 +16,7 @@ module.exports = function (
             score: 0,
             hasCards: [],
             playOrder: 1,
+            isCurrentPlayer: false
 
         }, playerConfig);
 

@@ -36,19 +36,12 @@
 	</div>
 
 	<div class="content clearfix">
-		<div class="panel panel-default left-panel pull-left">
 
-			<div class="panel-heading">
-				<div class="panel-title">Game log</div>
-			</div>
-
-			<div class="panel-body">
-				Logs go here
-			</div>
-
-		</div>
+		<div ng-include="'pokerGameGameLogPartial.html'"></div>
 
 		<div class="stage pull-left">
+
+			
 
 			<div ng-include="'pokerGamePlayerListPartial.html'"></div>
 
@@ -57,6 +50,7 @@
 			<div ng-include="'pokerGameMyCardsPartial.html'"></div>
 
 		</div>
+
 	</div>
 	
 	
@@ -68,40 +62,73 @@
 
 		angular
 		.module('demo', ['pokerGame'])
-		.controller('mainCtrl', function ($scope) {
+		.controller('mainCtrl', function (
+			$scope, 
+			pokerGameSuitEnum,
+			pokerGameKindEnum) {
 
-			$scope.deckConfig = {
+			angular.extend($scope, {
+				// A standard deck of cards
+				deckConfig: {
 
-			};
+					deck: {
+						spade: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'],
+						heart: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'],
+						club: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'],
+						diamond: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'],
+						joker: ['R Joker', 'B Joker']
+					}
+					
+				},
 
-			$scope.cardConfig = {
+				cardConfig: {
 
-			};
+				},
 
-			$scope.playerConfig = {
+				playerConfig: {
 
-				players: [{
-					name: 'Bob',
-					id: '123',
-					playOrder: 1
-				}, {
-					name: 'Alice',
-					id: '456',
-					playOrder: 2
-				}, {
-					name: 'Ryan',
-					id: '789',
-					playOrder: 3
-				}]
-			};
+					players: [{
+						name: 'Bob',
+						id: '123',
+						playOrder: 1
+					}, {
+						name: 'Winnie',
+						id: '456',
+						playOrder: 2
+					}, {
+						name: 'Ryan',
+						id: '789',
+						playOrder: 3
+					}]
+				},
 
-			$scope.ruleConfig = {
+				ruleConfig: {
 
-			};
+				},
 
-			$scope.customAlgorithm = {
+				customAlgorithm: {
 
-			};
+				},
+				/**
+				 * Init the deck of cards, read the rules
+				 * and setup the algorithms
+				 */
+				init: function () {
+
+
+
+				},
+				/**
+				 * Deal cards evenly to each player
+				 */
+				dealCards: function () {
+
+
+
+				}
+			});
+
+			
 			
 		})
 		.controller('DropdownCtrl', function ($scope) {

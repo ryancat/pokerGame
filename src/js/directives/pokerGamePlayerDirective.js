@@ -5,15 +5,17 @@
  */
 
 module.exports = function (
+    $log,
     pokerGameSuitEnum,
     pokerGameKindEnum,
-    PokerGamePlayerFactory) {
+    PokerGamePlayerFactory,
+    pokerGameCardTableModal,
+    pokerGamePlayerListModal) {
 
     return {
 
         restrict: 'EA',
         scope: {
-            playerName: '=',
             playerId: '='
         },
         templateUrl: 'pokerGamePlayerTemplate.html',
@@ -21,12 +23,33 @@ module.exports = function (
 
             angular.extend(scope, {
 
-                player: new PokerGamePlayerFactory({
-                    name: scope.playerName,
-                    id: scope.playerId
-                }),
+                pokerGameCardTableModal: pokerGameCardTableModal,
+
+                player: pokerGamePlayerListModal.getPlayerById(scope.playerId),
 
                 isCurrentPlayer: false
+
+            });
+
+            console.log(scope);
+
+            /**
+             * Watch on the change of cards playing
+             */
+            scope.$watch('pokerGameCardTableModal.cardsPlaying.length', function (newLength, oldLength) {
+
+                var newCards,
+                    currentPlayer;
+
+                if (angular.isUndefined(newLength)) {
+                    $log.warn('Invalid newLength');
+                    return ;
+                }
+
+                // When a player played a new card
+                if (newLength > oldLength) {
+                    newCards = pokerGameCardTableModal.getLatestPlayingCards();
+                }
 
             });
 

@@ -11,6 +11,7 @@ angular
 .controller('pokerGamePlayerListController', require('./js/controllers/pokerGamePlayerListController'))
 .controller('pokerGameCardTableController', require('./js/controllers/pokerGameCardTableController'))
 .controller('pokerGameMyCardsController', require('./js/controllers/pokerGameMyCardsController'))
+.controller('pokerGameGameLogController', require('./js/controllers/pokerGameGameLogController'))
 
 .factory('PokerGameCardFactory', require('./js/factories/pokerGameCardFactory'))
 .factory('PokerGameDeckFactory', require('./js/factories/pokerGameDeckFactory'))

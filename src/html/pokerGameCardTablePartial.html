@@ -1,5 +1,25 @@
 <div ng-controller="pokerGameCardTableController" class="card-table">
-
+    
     This is card table
+
+    <button type="button" class="btn btn-primary" 
+        ng-disabled="finishedDealCard" ng-click="dealCards()">
+        Deal Cards
+    </button>
+    {{ players }}
+    <ul>
+        <li ng-repeat="player in players">
+            <span>{{player.name}}</span>
+            <ul class="clearfix">
+                <li ng-repeat="card in player.hasCards" class="pull-left">
+                    <div poker-game-card
+                        suit="card.suit"
+                        kind="card.kind" ></div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    
 
 </div>
