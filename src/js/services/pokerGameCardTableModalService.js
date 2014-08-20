@@ -44,7 +44,7 @@ module.exports = function (
         /**
          * Shuffle the cards, and setup the cards to draw
          */
-        setCardsToDraw: function (deck) {
+        setCardsToDrawByDeck: function (deck) {
 
             cardsToDraw = _
             // Shuffle the given cards
@@ -71,6 +71,19 @@ module.exports = function (
 
         },
 
+        setCardsToDraw: function (cards) {
+
+            this.resetCardsToDraw();
+            Array.prototype.push.apply(cardsToDraw, cards);
+
+        },
+
+        resetCardsToDraw: function () {
+
+            cardsToDraw.length = 0;
+
+        },
+
         getCardsToDraw: function () {
 
             return cardsToDraw;
@@ -80,6 +93,60 @@ module.exports = function (
         getNumberOfCardsToDraw: function () {
 
             return cardsToDraw.length;
+
+        },
+
+        removeCardsFromCardsToDraw: function (cards) {
+
+            this.setCardsToDraw(_.difference(cardsToDraw, cards));
+
+        },
+
+        getCardByIdInCategory: function (cardId, cardsCategory) {
+
+            if (!angular.isArray(cardsCategory)) {
+                $log.warn('Invalid cardsCategory');
+                return ;
+            }
+
+            return _.find(_.flatten(cardsCategory), function (card) {
+                return card.id === cardId;
+            });
+
+        },
+
+        getCardById: function (cardId) {
+
+            var card;
+
+            if (angular.isDefined(card = this.getCardByIdInCategory(cardId, cardsToDraw))) {
+                return card;
+            }
+
+            if (angular.isDefined(card = this.getCardByIdInCategory(cardId, cardsPlayed))) {
+                return card;
+            }
+
+            if (angular.isDefined(card = this.getCardByIdInCategory(cardId, cardsPlaying))) {
+                return card;
+            }
+
+            return card;
+        },
+
+        addToCardsPlaying: function (cards) {
+
+            if (!angular.isArray(cards)) {
+                $log.warn('Invalid cards');
+                return ;
+            }
+
+            cardsPlaying.push(cards);
+        },
+
+        getCardsPlaying: function () {
+
+            return cardsPlaying;
 
         }
 

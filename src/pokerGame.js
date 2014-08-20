@@ -22,6 +22,7 @@ angular
 .service('pokerGameMyCardsModal', require('./js/services/pokerGameMyCardsModalService'))
 .service('pokerGamePlayerListModal', require('./js/services/pokerGamePlayerListModalService'))
 .service('pokerGameCardTableModal', require('./js/services/pokerGameCardTableModalService'))
+.service('pokerGameUtil', require('./js/services/pokerGameUtilService'))
 
 .directive('pokerGameCard', require('./js/directives/pokerGameCardDirective'))
 .directive('pokerGamePlayer', require('./js/directives/pokerGamePlayerDirective'))

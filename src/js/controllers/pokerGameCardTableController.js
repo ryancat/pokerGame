@@ -18,17 +18,23 @@ module.exports = function (
 
         pokerGameCardTableModal: pokerGameCardTableModal,
 
+        pokerGamePlayerListModal: pokerGamePlayerListModal,
+
         finishedDealCard: false,
 
-        players: [],
+        cardsPlayingStatus: {},
 
-        cards: [],
+        players: pokerGamePlayerListModal.getPlayers(),
+
+        // players: [],
+
+        // cards: [],
 
         init: function () {
 
-            pokerGameCardTableModal.setCardsToDraw($scope.deckConfig.deck);
+            pokerGameCardTableModal.setCardsToDrawByDeck($scope.deckConfig.deck);
 
-        },
+        },  
         /**
          * Deal the cards to each player
          */
@@ -42,11 +48,14 @@ module.exports = function (
 
             players.forEach(function (player, playerIndex) {
                 player.hasCards = cards.slice(playerIndex * numOfCardsPerPlayer, (playerIndex + 1) * numOfCardsPerPlayer);
+                player.hasCards.forEach(function (card) {
+                    card.belongsToPlayerId = player.id;
+                });
             });
 
             $scope.finishedDealCard = true;
 
-            $scope.players = players;
+            // $scope.players = players;
         }
 
     });
@@ -64,9 +73,10 @@ module.exports = function (
     /**
      * Watch on the change of cards playing
      */
-    $scope.$watch('pokerGameCardTableModal.cardsPlaying.length', function (newLength, oldLength) {
+    $scope.$watch('pokerGameCardTableModal.getCardsPlaying().length', function (newLength, oldLength) {
 
-        var newCards;
+        var newCards,
+            playerId;
 
         if (angular.isUndefined(newLength)) {
             $log.warn('Invalid newLength');
@@ -76,12 +86,21 @@ module.exports = function (
         // When a player played a new card
         if (newLength > oldLength) {
             newCards = pokerGameCardTableModal.getLatestPlayingCards();
+            
+            // When someone played no cards
+            if (newCards.length === 0) {
+                return ;
+            }
 
-        }
+            playerId = newCards[0].belongsToPlayerId;
+
+            $scope.cardsPlayingStatus[playerId] = newCards;
+        }   
 
     });
 
-    $log.log('The poker card table modal', pokerGameCardTableModal.getCardsToDraw());
-    $log.log('The players modal', pokerGamePlayerListModal.getPlayers());
+    // setInterval(function () {
+    //     $log.log('Some cards are playing', pokerGameCardTableModal.cardsPlaying);
+    // }, 1000);
 
 };

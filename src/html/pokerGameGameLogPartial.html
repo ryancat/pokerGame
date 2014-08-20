@@ -1,4 +1,4 @@
-<div ng-controller="pokerGameGameLogController" class="panel panel-default left-panel pull-left">
+<div ng-controller="pokerGameGameLogController" class="panel panel-default left-panel">
 
     <div class="panel-heading">
         <div class="panel-title">Game log</div>
@@ -6,6 +6,10 @@
 
     <div class="panel-body panel-game-log">
         Logs go here
+
+        <ul>
+            <li ng-repeat="log in logs">{{ log }}</li>
+        </ul>
 
     </div>
 

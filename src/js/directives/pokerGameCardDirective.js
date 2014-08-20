@@ -8,26 +8,25 @@ module.exports = function (
     $log,
     PokerGameCardFactory,
     pokerGameSuitEnum,
-    pokerGameKindEnum) {
+    pokerGameKindEnum,
+    pokerGameCardTableModal) {
 
     return {
 
         restrict: 'EA',
         scope: {
-            suit: '=',
-            kind: '='
+            cardId: '='
         },
         templateUrl: 'pokerGameCardTemplate.html',
         link: function (scope, element) {
 
             angular.extend(scope, {
 
-                card: new PokerGameCardFactory({
-                    suit: scope.suit,
-                    kind: scope.kind
-                }),
+                card: pokerGameCardTableModal.getCardById(scope.cardId),
 
                 pokerGameSuitEnum: pokerGameSuitEnum,
+
+                isSelected: false,
                 
                 init: function () {
                     
@@ -36,6 +35,19 @@ module.exports = function (
                 isJoker: function () {
 
                     return scope.card.isJoker();
+
+                },
+                /**
+                 * Select the current card
+                 */
+                toggleSelectCard: function () {
+
+                    if (scope.card.isPlayed) {
+                        $log.warn('Played cards cannot be selected');
+                        return ;
+                    }
+                    
+                    scope.card.isSelected = !scope.card.isSelected;
 
                 }
 

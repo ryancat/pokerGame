@@ -6,7 +6,8 @@
 
 module.exports = function (
     $log,
-    pokerGameSuitEnum) {
+    pokerGameSuitEnum,
+    pokerGameUtil) {
 
     var PokerGameDeckFactory = function (deckConfig) {
 
@@ -17,6 +18,7 @@ module.exports = function (
         this[pokerGameSuitEnum.CLUB] = [];
         this[pokerGameSuitEnum.DIAMOND] = [];
         this[pokerGameSuitEnum.JOKER] = [];
+        this.id = pokerGameUtil.makeRandomId();
 
         angular.extend(this, deckConfig);
 

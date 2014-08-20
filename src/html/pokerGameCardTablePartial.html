@@ -6,20 +6,15 @@
         ng-disabled="finishedDealCard" ng-click="dealCards()">
         Deal Cards
     </button>
-    {{ players }}
+
     <ul>
         <li ng-repeat="player in players">
-            <span>{{player.name}}</span>
             <ul class="clearfix">
-                <li ng-repeat="card in player.hasCards" class="pull-left">
-                    <div poker-game-card
-                        suit="card.suit"
-                        kind="card.kind" ></div>
+                <li ng-repeat="card in cardsPlayingStatus[player.id]" class="pull-left">
+                    <div poker-game-card card-id="card.id" ></div>
                 </li>
             </ul>
         </li>
     </ul>
-
-    
 
 </div>

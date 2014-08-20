@@ -35,13 +35,11 @@
 		</div>
 	</div>
 
-	<div class="content clearfix">
+	<div class="content">
 
 		<div ng-include="'pokerGameGameLogPartial.html'"></div>
 
-		<div class="stage pull-left">
-
-			
+		<div class="stage">
 
 			<div ng-include="'pokerGamePlayerListPartial.html'"></div>
 
@@ -89,16 +87,14 @@
 
 					players: [{
 						name: 'Bob',
-						id: '123',
 						playOrder: 1
 					}, {
 						name: 'Winnie',
-						id: '456',
 						playOrder: 2
 					}, {
 						name: 'Ryan',
-						id: '789',
-						playOrder: 3
+						playOrder: 3,
+						isHomePlayer: true
 					}]
 				},
 

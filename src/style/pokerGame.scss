@@ -1,26 +1,47 @@
+/**
+ * Reset
+ */
+li {
+    list-style: none
+}
+
+ul {
+    padding: 0;
+}
+
 .header {
     margin: 10px;
 }
 
 .content {
+    position: relative;
     margin: 10px;
 }
 
 .left-panel {
-    width: 300px;
-    height: 300px;
+    position: absolute;
+    width: 250px;
+    height: 500px;
 
     .panel-game-log {
-        height: 200px;
+        height: 400px;
     }
 }
 
+.stage {
+    margin-left: 270px;
+}
+
+/**
+ * The player list section
+ */
 .player-list {
-    li {
-        list-style: none;
-    }
+
 }
 
+/**
+ * The poker game player directive
+ */
 .poker-game-player {
     width: 50px;
     margin: 4px;
@@ -51,6 +72,9 @@
     }
 }
 
+/**
+ * Poker game card directive
+ */
 .poker-game-card {
 
     width: 45px;
@@ -67,8 +91,8 @@
     &.black-card {
         color: black;
     }
-}
 
-li {
-    list-style: none
+    &.selected {
+        background-color: #FFF1A8;
+    }
 }

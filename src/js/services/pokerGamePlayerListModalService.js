@@ -8,7 +8,8 @@
 
 module.exports = function (
     $log,
-    PokerGamePlayerFactory) {
+    PokerGamePlayerFactory,
+    pokerGameUtil) {
 
     var players = [];
 
@@ -28,7 +29,7 @@ module.exports = function (
             this.resetPlayers();
 
             playerList.forEach(function (player) {
-
+                player.id = pokerGameUtil.makeRandomId();
                 players.push(new PokerGamePlayerFactory(player));
 
             });
@@ -58,6 +59,44 @@ module.exports = function (
 
             return _.find(players, function (player) {
                 return player.isCurrentPlayer;
+            });
+
+        },
+        /**
+         * Set the given player to 'my player'
+         */
+        setHomePlayerById: function (playerId) {
+
+            var player = this.getPlayerById(playerid);
+
+            if (angular.isUndefined(player)) {
+                $log.warn('Invalid playerId');
+                return ;
+            }
+
+            this.resetHomePlayer();
+            player.isHomePlayer = true;
+
+        },  
+        /**
+         * Clean all home player
+         */
+        resetHomePlayer: function () {
+
+            players.forEach(function (player) {
+
+                player.isHomePlayer = false;
+
+            });
+
+        },
+        /**
+         * Get the home player ('my player')
+         */
+        getHomePlayer: function () {
+
+            return _.find(players, function (player) {
+                return player.isHomePlayer;
             });
 
         }

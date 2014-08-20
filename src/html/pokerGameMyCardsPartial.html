@@ -2,8 +2,16 @@
 
     <span> This is my cards partial </span>
 
-    <div poker-game-card
-        suit="suit"
-        kind="kind" ></div>
+    <ul class="clearfix">
+        <li ng-repeat="card in homePlayer.hasCards" class="pull-left">
+            <div poker-game-card card-id="card.id" ></div>
+        </li>
+    </ul>
+
+    <button type="button" class="btn btn-primary" 
+        ng-disabled="!selectedCards.length"
+        ng-click="playCards()">
+        Play Cards
+    </button>
 
 </div>

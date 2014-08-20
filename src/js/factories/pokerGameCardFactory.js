@@ -7,7 +7,8 @@
 module.exports = function (
     $log,
     pokerGameSuitEnum,
-    pokerGameKindEnum) {
+    pokerGameKindEnum,
+    pokerGameUtil) {
 
     var PokerGameCardFactory = function (cardConfig) {
 
@@ -16,6 +17,7 @@ module.exports = function (
          */
         angular.extend(this, {
 
+            id: pokerGameUtil.makeRandomId(),
             /**
              * one of the four suit enum
              * [ 'SPADE', 'HEART', 'CLUB', 'DIAMOND' ]
@@ -29,10 +31,12 @@ module.exports = function (
              * boolean value of if this card has been played
              */
             isPlayed: false,
+
+            isSelected: false,
             /**
              * one of the player
              */
-            belongsToPlayer: undefined
+            belongsToPlayerId: undefined
 
         }, cardConfig);
 
