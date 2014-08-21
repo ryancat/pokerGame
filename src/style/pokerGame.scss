@@ -95,4 +95,8 @@ ul {
     &.selected {
         background-color: #FFF1A8;
     }
+
+    &.playing {
+        cursor: default;
+    }
 }

@@ -27,6 +27,10 @@ module.exports = function (
                 pokerGameSuitEnum: pokerGameSuitEnum,
 
                 isSelected: false,
+
+                isPlaying: false,
+
+                isPlayed: false,
                 
                 init: function () {
                     
@@ -42,11 +46,11 @@ module.exports = function (
                  */
                 toggleSelectCard: function () {
 
-                    if (scope.card.isPlayed) {
+                    if (scope.card.isPlaying) {
                         $log.warn('Played cards cannot be selected');
                         return ;
                     }
-                    
+
                     scope.card.isSelected = !scope.card.isSelected;
 
                 }

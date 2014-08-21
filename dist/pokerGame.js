@@ -58,6 +58,7 @@
         });
         /**
      * Watch on the change of cards playing
+     * This will trigger the next player plays card
      */
         $scope.$watch('pokerGameCardTableModal.getCardsPlaying().length', function (newLength, oldLength) {
           var newCards, playerId;
@@ -73,7 +74,7 @@
               return;
             }
             playerId = newCards[0].belongsToPlayerId;
-            $scope.cardsPlayingStatus[playerId] = newCards;
+            $scope.cardsPlayingStatus[playerId] = newCards;  // Next player will start play
           }
         });  // setInterval(function () {
              //     $log.log('Some cards are playing', pokerGameCardTableModal.cardsPlaying);
@@ -141,7 +142,7 @@
           playCards: function () {
             var cardsToPlay = _.filter($scope.homePlayer.hasCards, 'isSelected');
             cardsToPlay.forEach(function (card) {
-              card.isPlayed = true;
+              card.isPlaying = true;
               card.isSelected = false;
             });
             // home user no longer has played cards
@@ -200,13 +201,15 @@
               card: pokerGameCardTableModal.getCardById(scope.cardId),
               pokerGameSuitEnum: pokerGameSuitEnum,
               isSelected: false,
+              isPlaying: false,
+              isPlayed: false,
               init: function () {
               },
               isJoker: function () {
                 return scope.card.isJoker();
               },
               toggleSelectCard: function () {
-                if (scope.card.isPlayed) {
+                if (scope.card.isPlaying) {
                   $log.warn('Played cards cannot be selected');
                   return;
                 }
@@ -276,6 +279,7 @@
             suit: pokerGameSuitEnum.SPADE,
             kind: pokerGameKindEnum.ACE,
             isPlayed: false,
+            isPlaying: false,
             isSelected: false,
             belongsToPlayerId: undefined
           }, cardConfig);
@@ -579,13 +583,16 @@
             return players;
           },
           setPlayers: function (playerList) {
+            var playerOrders;
             if (!angular.isArray(playerList)) {
               $log.warn('Invalid playerList');
               return;
             }
+            orderedPlayers = _.sortBy(playerList, 'order');
             this.resetPlayers();
-            playerList.forEach(function (player) {
+            orderedPlayers.forEach(function (player, playerIndex) {
               player.id = pokerGameUtil.makeRandomId();
+              player.nextPlayerId = orderedPlayers[(playerIndex + 1) % orderedPlayers.length].id;
               players.push(new PokerGamePlayerFactory(player));
             });
           },
@@ -739,7 +746,7 @@ angular.module("pokerGameCardTablePartial.html", []).run(["$templateCache", func
     "        ng-disabled=\"finishedDealCard\" ng-click=\"dealCards()\">\n" +
     "        Deal Cards\n" +
     "    </button>\n" +
-    "\n" +
+    "    {{ players }}\n" +
     "    <ul>\n" +
     "        <li ng-repeat=\"player in players\">\n" +
     "            <ul class=\"clearfix\">\n" +
@@ -756,7 +763,7 @@ angular.module("pokerGameCardTablePartial.html", []).run(["$templateCache", func
 angular.module("pokerGameCardTemplate.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("pokerGameCardTemplate.html",
     "<div class=\"poker-game-card\" \n" +
-    "    ng-class=\"{ 'red-card': card.isRedCard(), 'black-card': card.isBlackCard(), 'selected': card.isSelected }\"\n" +
+    "    ng-class=\"{ 'red-card': card.isRedCard(), 'black-card': card.isBlackCard(), 'selected': card.isSelected, 'playing': card.isPlaying }\"\n" +
     "    ng-click=\"toggleSelectCard()\">\n" +
     "    <span class=\"card-suit\" ng-class=\"{ 'icon-spades': card.suit == pokerGameSuitEnum.SPADE, 'icon-heart': card.suit == pokerGameSuitEnum.HEART, 'icon-clubs': card.suit == pokerGameSuitEnum.CLUB, 'icon-diamonds': card.suit == pokerGameSuitEnum.DIAMOND }\" ng-hide=\"card.isJoker()\"></span>\n" +
     "    \n" +

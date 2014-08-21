@@ -1,5 +1,5 @@
 <div class="poker-game-card" 
-    ng-class="{ 'red-card': card.isRedCard(), 'black-card': card.isBlackCard(), 'selected': card.isSelected }"
+    ng-class="{ 'red-card': card.isRedCard(), 'black-card': card.isBlackCard(), 'selected': card.isSelected, 'playing': card.isPlaying }"
     ng-click="toggleSelectCard()">
     <span class="card-suit" ng-class="{ 'icon-spades': card.suit == pokerGameSuitEnum.SPADE, 'icon-heart': card.suit == pokerGameSuitEnum.HEART, 'icon-clubs': card.suit == pokerGameSuitEnum.CLUB, 'icon-diamonds': card.suit == pokerGameSuitEnum.DIAMOND }" ng-hide="card.isJoker()"></span>
     

@@ -65,13 +65,14 @@ module.exports = function (
     $scope.$watch('finishedDealCard', function (finishedDealCard) {
 
         if (finishedDealCard) {
-
+            // Game started
         }
 
     });
 
     /**
      * Watch on the change of cards playing
+     * This will trigger the next player plays card
      */
     $scope.$watch('pokerGameCardTableModal.getCardsPlaying().length', function (newLength, oldLength) {
 
@@ -93,8 +94,10 @@ module.exports = function (
             }
 
             playerId = newCards[0].belongsToPlayerId;
-
             $scope.cardsPlayingStatus[playerId] = newCards;
+
+            // Next player will start play
+            
         }   
 
     });

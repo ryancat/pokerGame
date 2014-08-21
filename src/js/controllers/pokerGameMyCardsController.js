@@ -29,7 +29,7 @@ module.exports = function (
             var cardsToPlay = _.filter($scope.homePlayer.hasCards, 'isSelected');
             
             cardsToPlay.forEach(function (card) {
-                card.isPlayed = true;
+                card.isPlaying = true;
                 card.isSelected = false;
             });
 

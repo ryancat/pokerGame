@@ -31,6 +31,10 @@ module.exports = function (
              * boolean value of if this card has been played
              */
             isPlayed: false,
+            /**
+             * Boolean value of if this car is being played
+             */
+            isPlaying: false,
 
             isSelected: false,
             /**

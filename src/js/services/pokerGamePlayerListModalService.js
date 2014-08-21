@@ -21,15 +21,20 @@ module.exports = function (
 
         setPlayers: function (playerList) {
 
+            var playerOrders;
+
             if (!angular.isArray(playerList)) {
                 $log.warn('Invalid playerList');
                 return ;
             }
 
-            this.resetPlayers();
+            orderedPlayers = _.sortBy(playerList, 'order');
 
-            playerList.forEach(function (player) {
+
+            this.resetPlayers();
+            orderedPlayers.forEach(function (player, playerIndex) {
                 player.id = pokerGameUtil.makeRandomId();
+                player.nextPlayerId = orderedPlayers[(playerIndex + 1) % orderedPlayers.length].id;
                 players.push(new PokerGamePlayerFactory(player));
 
             });
