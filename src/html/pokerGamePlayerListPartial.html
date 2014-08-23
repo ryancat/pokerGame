@@ -3,7 +3,8 @@
     <ul class="clearfix">
         <li ng-repeat="player in pokerGamePlayerListModal.getPlayers()" class="pull-left">
             <div poker-game-player
-                player-id="player.id"></div>
+                player-id="player.id"
+                is-current-player="player.isCurrentPlayer"></div>
         </li>
     </ul>
 

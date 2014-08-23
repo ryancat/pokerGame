@@ -38,6 +38,7 @@ module.exports = function (
             $scope.homePlayer.hasCards = _.difference($scope.homePlayer.hasCards, cardsToPlay);
             pokerGameCardTableModal.addToCardsPlaying(cardsToPlay);
             pokerGameCardTableModal.removeCardsFromCardsToDraw(cardsToPlay);
+
         }
 
     });

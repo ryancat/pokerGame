@@ -54,7 +54,7 @@ ul {
         text-align: center;
         opacity: 0;
 
-        .active {
+        &.active {
             opacity: 1;
         }
     }

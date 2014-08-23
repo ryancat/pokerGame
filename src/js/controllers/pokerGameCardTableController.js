@@ -7,14 +7,16 @@
 module.exports = function (
     $scope,
     $log,
+    $q,
+    $timeout,
     pokerGameSuitEnum,
     pokerGameKindEnum,
+    pokerGameSpeedEnum,
+    pokerGameCardsNumberEnum,
     pokerGameCardTableModal,
     pokerGamePlayerListModal) {
 
     angular.extend($scope, {
-
-        deckConfig: $scope.deckConfig,
 
         pokerGameCardTableModal: pokerGameCardTableModal,
 
@@ -54,39 +56,50 @@ module.exports = function (
             });
 
             $scope.finishedDealCard = true;
+            // Get the next player (fist one) to play
+            $scope.switchToNextPlayer();
 
-            // $scope.players = players;
-        }
+        },
+        /**
+         * Wait for player to play card
+         * User can set timeout speed in rule config
+         */
+        waitForPlayer: function () {
 
-    });
+            var deferred = $q.defer(),
+                playSpeed = $scope.ruleConfig.playSpeed,
+                timeout = pokerGameSpeedEnum.getTimeoutMiliseconds(playSpeed);
 
-    $scope.init();
+            if (playSpeed === pokerGameSpeedEnum.ALWAYS_WAIT) {
+                return ;
+            }
 
-    $scope.$watch('finishedDealCard', function (finishedDealCard) {
+            $scope.playTimeout = $timeout($scope.switchToNextPlayer, timeout);
 
-        if (finishedDealCard) {
-            // Game started
-        }
+        },
+        /**
+         * Find the next player and switch to it
+         * Also assume the current player either
+         * play nothing or
+         * play the same number of cards, following the rule
+         * Depend on the rule
+         */
+        switchToNextPlayer: function () {
 
-    });
+            // Set the next player to be the current player
+            var nextPlayer = pokerGamePlayerListModal.getNextPlayer();
+            pokerGamePlayerListModal.setCurrentPlayer(nextPlayer);
+            // Wait for the current player play
+            $scope.waitForPlayer();
+        },
+        /**
+         * After someone played cards, this function will handle
+         * the player switch logic
+         */
+        handlePlayingCards: function () {
 
-    /**
-     * Watch on the change of cards playing
-     * This will trigger the next player plays card
-     */
-    $scope.$watch('pokerGameCardTableModal.getCardsPlaying().length', function (newLength, oldLength) {
-
-        var newCards,
-            playerId;
-
-        if (angular.isUndefined(newLength)) {
-            $log.warn('Invalid newLength');
-            return ;
-        }
-
-        // When a player played a new card
-        if (newLength > oldLength) {
-            newCards = pokerGameCardTableModal.getLatestPlayingCards();
+            var newCards = pokerGameCardTableModal.getLatestPlayingCards(),
+                playerId;
             
             // When someone played no cards
             if (newCards.length === 0) {
@@ -96,8 +109,43 @@ module.exports = function (
             playerId = newCards[0].belongsToPlayerId;
             $scope.cardsPlayingStatus[playerId] = newCards;
 
-            // Next player will start play
-            
+            // Wait the next player play cards
+            // If everyone has tried to play card, we will decide who win this round
+            if (angular.isDefined($scope.playTimeout)) {
+                $timeout.cancel($scope.playTimeout);
+            }
+
+            $scope.switchToNextPlayer();
+        }
+
+    });
+
+    $scope.init();
+
+    // $scope.$watch('finishedDealCard', function (finishedDealCard) {
+
+    //     if (finishedDealCard) {
+    //         // Game started
+    //         // Wait for the first player play card
+    //         $scope.waitForPlayer(pokerGamePlayerListModal.getFirstPlayer());
+    //     }
+
+    // });
+
+    /**
+     * Watch on the change of cards playing
+     * This will trigger the next player plays card
+     */
+    $scope.$watch('pokerGameCardTableModal.getCardsPlaying().length', function (newLength, oldLength) {
+
+        if (angular.isUndefined(newLength)) {
+            $log.warn('Invalid newLength');
+            return ;
+        }
+
+        // When a player played a new card
+        if (newLength > oldLength) {
+            $scope.handlePlayingCards();
         }   
 
     });

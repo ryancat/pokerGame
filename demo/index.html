@@ -63,7 +63,9 @@
 		.controller('mainCtrl', function (
 			$scope, 
 			pokerGameSuitEnum,
-			pokerGameKindEnum) {
+			pokerGameKindEnum,
+			pokerGameCardsNumberEnum,
+			pokerGameSpeedEnum) {
 
 			angular.extend($scope, {
 				// A standard deck of cards
@@ -87,18 +89,25 @@
 
 					players: [{
 						name: 'Bob',
-						playOrder: 1
+						playOrder: 3
 					}, {
 						name: 'Winnie',
 						playOrder: 2
 					}, {
 						name: 'Ryan',
-						playOrder: 3,
+						playOrder: 1,
 						isHomePlayer: true
 					}]
 				},
 
 				ruleConfig: {
+					// Play speed from 0 to 3
+					// ALWAYS_WAIT: No timeout, always wait
+					// SLOW: slow timeout
+					// NORMAL: normal timeout
+					// FAST: fast timeout
+					playSpeed: pokerGameSpeedEnum.ALWAYS_WAIT,
+					limitNumOfCardsPerRound: pokerGameCardsNumberEnum.NO_LIMIT
 
 				},
 

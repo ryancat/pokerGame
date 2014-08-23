@@ -29,9 +29,8 @@
  * @ngInject
  * @author rchen
  */
-      module.exports = function ($scope, $log, pokerGameSuitEnum, pokerGameKindEnum, pokerGameCardTableModal, pokerGamePlayerListModal) {
+      module.exports = function ($scope, $log, $q, $timeout, pokerGameSuitEnum, pokerGameKindEnum, pokerGameSpeedEnum, pokerGameCardsNumberEnum, pokerGameCardTableModal, pokerGamePlayerListModal) {
         angular.extend($scope, {
-          deckConfig: $scope.deckConfig,
           pokerGameCardTableModal: pokerGameCardTableModal,
           pokerGamePlayerListModal: pokerGamePlayerListModal,
           finishedDealCard: false,
@@ -48,33 +47,60 @@
                 card.belongsToPlayerId = player.id;
               });
             });
-            $scope.finishedDealCard = true;  // $scope.players = players;
+            $scope.finishedDealCard = true;
+            // Get the next player (fist one) to play
+            $scope.switchToNextPlayer();
+          },
+          waitForPlayer: function () {
+            var deferred = $q.defer(), playSpeed = $scope.ruleConfig.playSpeed, timeout = pokerGameSpeedEnum.getTimeoutMiliseconds(playSpeed);
+            if (playSpeed === pokerGameSpeedEnum.ALWAYS_WAIT) {
+              return;
+            }
+            $scope.playTimeout = $timeout($scope.switchToNextPlayer, timeout);
+          },
+          switchToNextPlayer: function () {
+            // Set the next player to be the current player
+            var nextPlayer = pokerGamePlayerListModal.getNextPlayer();
+            pokerGamePlayerListModal.setCurrentPlayer(nextPlayer);
+            // Wait for the current player play
+            $scope.waitForPlayer();
+          },
+          handlePlayingCards: function () {
+            var newCards = pokerGameCardTableModal.getLatestPlayingCards(), playerId;
+            // When someone played no cards
+            if (newCards.length === 0) {
+              return;
+            }
+            playerId = newCards[0].belongsToPlayerId;
+            $scope.cardsPlayingStatus[playerId] = newCards;
+            // Wait the next player play cards
+            // If everyone has tried to play card, we will decide who win this round
+            if (angular.isDefined($scope.playTimeout)) {
+              $timeout.cancel($scope.playTimeout);
+            }
+            $scope.switchToNextPlayer();
           }
         });
         $scope.init();
-        $scope.$watch('finishedDealCard', function (finishedDealCard) {
-          if (finishedDealCard) {
-          }
-        });
+        // $scope.$watch('finishedDealCard', function (finishedDealCard) {
+        //     if (finishedDealCard) {
+        //         // Game started
+        //         // Wait for the first player play card
+        //         $scope.waitForPlayer(pokerGamePlayerListModal.getFirstPlayer());
+        //     }
+        // });
         /**
      * Watch on the change of cards playing
      * This will trigger the next player plays card
      */
         $scope.$watch('pokerGameCardTableModal.getCardsPlaying().length', function (newLength, oldLength) {
-          var newCards, playerId;
           if (angular.isUndefined(newLength)) {
             $log.warn('Invalid newLength');
             return;
           }
           // When a player played a new card
           if (newLength > oldLength) {
-            newCards = pokerGameCardTableModal.getLatestPlayingCards();
-            // When someone played no cards
-            if (newCards.length === 0) {
-              return;
-            }
-            playerId = newCards[0].belongsToPlayerId;
-            $scope.cardsPlayingStatus[playerId] = newCards;  // Next player will start play
+            $scope.handlePlayingCards();
           }
         });  // setInterval(function () {
              //     $log.log('Some cards are playing', pokerGameCardTableModal.cardsPlaying);
@@ -233,13 +259,15 @@
       module.exports = function ($log, pokerGameSuitEnum, pokerGameKindEnum, PokerGamePlayerFactory, pokerGameCardTableModal, pokerGamePlayerListModal) {
         return {
           restrict: 'EA',
-          scope: { playerId: '=' },
+          scope: {
+            playerId: '=',
+            isCurrentPlayer: '='
+          },
           templateUrl: 'pokerGamePlayerTemplate.html',
           link: function (scope, element) {
             angular.extend(scope, {
               pokerGameCardTableModal: pokerGameCardTableModal,
-              player: pokerGamePlayerListModal.getPlayerById(scope.playerId),
-              isCurrentPlayer: false
+              player: pokerGamePlayerListModal.getPlayerById(scope.playerId)
             });
             console.log(scope);
             /**
@@ -351,7 +379,8 @@
             hasCards: [],
             playOrder: 1,
             isCurrentPlayer: false,
-            isHomePlayer: false
+            isHomePlayer: false,
+            nextPlayerId: ''
           }, playerConfig);
         };
         PokerGamePlayerFactory.prototype = {};
@@ -488,6 +517,27 @@
   12: [
     function (require, module, exports) {
       /**
+ * @fileoverview The limit on number of cards played per round
+ * @ngInject
+ * @author rchen
+ */
+      // global: _, module
+      module.exports = function () {
+        var pokerGameCardsNumberEnum = Object.freeze({
+            NO_LIMIT: '0',
+            SAME: '1'
+          });
+        angular.extend(this, {
+          NO_LIMIT: pokerGameCardsNumberEnum.NO_LIMIT,
+          SAME: pokerGameCardsNumberEnum.SAME
+        });
+      };
+    },
+    {}
+  ],
+  13: [
+    function (require, module, exports) {
+      /**
  * @fileoverview The card deck enum
  * @ngInject
  * @author rchen
@@ -542,7 +592,7 @@
     },
     {}
   ],
-  13: [
+  14: [
     function (require, module, exports) {
       /**
  * @fileOverview The my cards section data modal
@@ -568,7 +618,7 @@
     },
     {}
   ],
-  14: [
+  15: [
     function (require, module, exports) {
       /**
  * @fileOverview The player list section data modal
@@ -583,16 +633,21 @@
             return players;
           },
           setPlayers: function (playerList) {
-            var playerOrders;
+            var numOfPlayer, orderedPlayers;
             if (!angular.isArray(playerList)) {
               $log.warn('Invalid playerList');
               return;
             }
-            orderedPlayers = _.sortBy(playerList, 'order');
+            numOfPlayer = playerList.length;
+            orderedPlayers = _.sortBy(playerList, 'playOrder');
             this.resetPlayers();
+            // Initialize the random id
             orderedPlayers.forEach(function (player, playerIndex) {
               player.id = pokerGameUtil.makeRandomId();
-              player.nextPlayerId = orderedPlayers[(playerIndex + 1) % orderedPlayers.length].id;
+            });
+            // Set the next player id, and create player
+            orderedPlayers.forEach(function (player, playerIndex) {
+              player.nextPlayerId = orderedPlayers[(playerIndex + 1) % numOfPlayer].id;
               players.push(new PokerGamePlayerFactory(player));
             });
           },
@@ -612,6 +667,16 @@
               return player.isCurrentPlayer;
             });
           },
+          setCurrentPlayer: function (player) {
+            if (!(player instanceof PokerGamePlayerFactory)) {
+              $log.warn('Invalid player');
+              return;
+            }
+            players.forEach(function (p) {
+              p.isCurrentPlayer = false;
+            });
+            player.isCurrentPlayer = true;
+          },
           setHomePlayerById: function (playerId) {
             var player = this.getPlayerById(playerid);
             if (angular.isUndefined(player)) {
@@ -630,13 +695,79 @@
             return _.find(players, function (player) {
               return player.isHomePlayer;
             });
+          },
+          getFirstPlayer: function () {
+            var orderedPlayers = _.sortBy(players, 'playOrder');
+            if (orderedPlayers.length === 0) {
+              $log.warn('Invalid players number');
+              return;
+            }
+            return orderedPlayers[0];
+          },
+          getNextPlayer: function () {
+            var currentPlayer = this.getCurrentPlayer(), nextPlayerId, nextPlayer;
+            // If there is no current player 
+            // We will set the first player to be the current player   
+            if (angular.isUndefined(currentPlayer)) {
+              return this.getFirstPlayer();
+            }
+            nextPlayerId = currentPlayer.nextPlayerId;
+            nextPlayer = _.find(players, function (player) {
+              return player.id === nextPlayerId;
+            });
+            if (angular.isUndefined(nextPlayer)) {
+              $log.warn('Invalid next player');
+              return;
+            }
+            return nextPlayer;
           }
         });
       };
     },
     {}
   ],
-  15: [
+  16: [
+    function (require, module, exports) {
+      /**
+ * @fileoverview The play speed enum
+ * @ngInject
+ * @author rchen
+ */
+      // global: _, module
+      module.exports = function () {
+        var pokerGameSpeedEnum = Object.freeze({
+            ALWAYS_WAIT: '0',
+            SLOW: '1',
+            NORMAL: '2',
+            FAST: '3'
+          });
+        angular.extend(this, {
+          ALWAYS_WAIT: pokerGameSpeedEnum.ALWAYS_WAIT,
+          SLOW: pokerGameSpeedEnum.SLOW,
+          NORMAL: pokerGameSpeedEnum.NORMAL,
+          FAST: pokerGameSpeedEnum.FAST,
+          getTimeoutMiliseconds: function (speed) {
+            switch (speed) {
+            case pokerGameSpeedEnum.ALWAYS_WAIT:
+              // Meaning we are waiting forever
+              return -1;
+            case pokerGameSpeedEnum.SLOW:
+              // Wait for one hour
+              return 60000;
+            case pokerGameSpeedEnum.NORMAL:
+              return 10000;
+            case pokerGameSpeedEnum.FAST:
+              return 6000;
+            default:
+              return 10000;
+            }
+          }
+        });
+      };
+    },
+    {}
+  ],
+  17: [
     function (require, module, exports) {
       /**
  * @fileoverview The card suit enum
@@ -670,7 +801,7 @@
     },
     {}
   ],
-  16: [
+  18: [
     function (require, module, exports) {
       /**
  * @fileOverview Some util functions
@@ -693,9 +824,9 @@
     },
     {}
   ],
-  17: [
+  19: [
     function (require, module, exports) {
-      angular.module('pokerGame', ['pokerGameTemplate']).value('pokerGameOptions', {}).filter('pokerGameKindOnCardFilter', require('./js/filters/pokerGameKindOnCardFilter')).controller('pokerGamePlayerListController', require('./js/controllers/pokerGamePlayerListController')).controller('pokerGameCardTableController', require('./js/controllers/pokerGameCardTableController')).controller('pokerGameMyCardsController', require('./js/controllers/pokerGameMyCardsController')).controller('pokerGameGameLogController', require('./js/controllers/pokerGameGameLogController')).factory('PokerGameCardFactory', require('./js/factories/pokerGameCardFactory')).factory('PokerGameDeckFactory', require('./js/factories/pokerGameDeckFactory')).factory('PokerGamePlayerFactory', require('./js/factories/pokerGamePlayerFactory')).service('pokerGameSuitEnum', require('./js/services/pokerGameSuitEnumService')).service('pokerGameKindEnum', require('./js/services/pokerGameKindEnumService')).service('pokerGameMyCardsModal', require('./js/services/pokerGameMyCardsModalService')).service('pokerGamePlayerListModal', require('./js/services/pokerGamePlayerListModalService')).service('pokerGameCardTableModal', require('./js/services/pokerGameCardTableModalService')).service('pokerGameUtil', require('./js/services/pokerGameUtilService')).directive('pokerGameCard', require('./js/directives/pokerGameCardDirective')).directive('pokerGamePlayer', require('./js/directives/pokerGamePlayerDirective')).directive('pokerGame', function () {
+      angular.module('pokerGame', ['pokerGameTemplate']).value('pokerGameOptions', {}).filter('pokerGameKindOnCardFilter', require('./js/filters/pokerGameKindOnCardFilter')).controller('pokerGamePlayerListController', require('./js/controllers/pokerGamePlayerListController')).controller('pokerGameCardTableController', require('./js/controllers/pokerGameCardTableController')).controller('pokerGameMyCardsController', require('./js/controllers/pokerGameMyCardsController')).controller('pokerGameGameLogController', require('./js/controllers/pokerGameGameLogController')).factory('PokerGameCardFactory', require('./js/factories/pokerGameCardFactory')).factory('PokerGameDeckFactory', require('./js/factories/pokerGameDeckFactory')).factory('PokerGamePlayerFactory', require('./js/factories/pokerGamePlayerFactory')).service('pokerGameSuitEnum', require('./js/services/pokerGameSuitEnumService')).service('pokerGameKindEnum', require('./js/services/pokerGameKindEnumService')).service('pokerGameSpeedEnum', require('./js/services/pokerGameSpeedEnumService')).service('pokerGameCardsNumberEnum', require('./js/services/pokerGameCardsNumberEnumService')).service('pokerGameMyCardsModal', require('./js/services/pokerGameMyCardsModalService')).service('pokerGamePlayerListModal', require('./js/services/pokerGamePlayerListModalService')).service('pokerGameCardTableModal', require('./js/services/pokerGameCardTableModalService')).service('pokerGameUtil', require('./js/services/pokerGameUtilService')).directive('pokerGameCard', require('./js/directives/pokerGameCardDirective')).directive('pokerGamePlayer', require('./js/directives/pokerGamePlayerDirective')).directive('pokerGame', function () {
         return {
           restrict: '',
           scope: {},
@@ -721,14 +852,16 @@
       './js/factories/pokerGamePlayerFactory': 9,
       './js/filters/pokerGameKindOnCardFilter': 10,
       './js/services/pokerGameCardTableModalService': 11,
-      './js/services/pokerGameKindEnumService': 12,
-      './js/services/pokerGameMyCardsModalService': 13,
-      './js/services/pokerGamePlayerListModalService': 14,
-      './js/services/pokerGameSuitEnumService': 15,
-      './js/services/pokerGameUtilService': 16
+      './js/services/pokerGameCardsNumberEnumService': 12,
+      './js/services/pokerGameKindEnumService': 13,
+      './js/services/pokerGameMyCardsModalService': 14,
+      './js/services/pokerGamePlayerListModalService': 15,
+      './js/services/pokerGameSpeedEnumService': 16,
+      './js/services/pokerGameSuitEnumService': 17,
+      './js/services/pokerGameUtilService': 18
     }
   ]
-}, {}, [17]));
+}, {}, [19]));
 angular.module('pokerGameTemplate', ['pokerGame.html', 'pokerGameCardTablePartial.html', 'pokerGameCardTemplate.html', 'pokerGameGameLogPartial.html', 'pokerGameMyCardsPartial.html', 'pokerGamePlayerListPartial.html', 'pokerGamePlayerTemplate.html']);
 
 angular.module("pokerGame.html", []).run(["$templateCache", function($templateCache) {
@@ -746,7 +879,7 @@ angular.module("pokerGameCardTablePartial.html", []).run(["$templateCache", func
     "        ng-disabled=\"finishedDealCard\" ng-click=\"dealCards()\">\n" +
     "        Deal Cards\n" +
     "    </button>\n" +
-    "    {{ players }}\n" +
+    "\n" +
     "    <ul>\n" +
     "        <li ng-repeat=\"player in players\">\n" +
     "            <ul class=\"clearfix\">\n" +
@@ -812,7 +945,7 @@ angular.module("pokerGameMyCardsPartial.html", []).run(["$templateCache", functi
     "    </ul>\n" +
     "\n" +
     "    <button type=\"button\" class=\"btn btn-primary\" \n" +
-    "        ng-disabled=\"!selectedCards.length\"\n" +
+    "        ng-disabled=\"selectedCards.length == 0 || !homePlayer.isCurrentPlayer\"\n" +
     "        ng-click=\"playCards()\">\n" +
     "        Play Cards\n" +
     "    </button>\n" +
@@ -827,7 +960,8 @@ angular.module("pokerGamePlayerListPartial.html", []).run(["$templateCache", fun
     "    <ul class=\"clearfix\">\n" +
     "        <li ng-repeat=\"player in pokerGamePlayerListModal.getPlayers()\" class=\"pull-left\">\n" +
     "            <div poker-game-player\n" +
-    "                player-id=\"player.id\"></div>\n" +
+    "                player-id=\"player.id\"\n" +
+    "                is-current-player=\"player.isCurrentPlayer\"></div>\n" +
     "        </li>\n" +
     "    </ul>\n" +
     "\n" +
@@ -838,8 +972,8 @@ angular.module("pokerGamePlayerTemplate.html", []).run(["$templateCache", functi
   $templateCache.put("pokerGamePlayerTemplate.html",
     "<div class=\"poker-game-player\">\n" +
     "\n" +
-    "    <div class=\"current-player-arrow\">\n" +
-    "        <span class=\"icon-arrow-down\" ng-class=\"{ 'active': isCurrentPlayer }\"></span>\n" +
+    "    <div class=\"current-player-arrow\" ng-class=\"{ 'active': isCurrentPlayer }\">\n" +
+    "        <span class=\"icon-arrow-down\"></span>\n" +
     "    </div>\n" +
     "\n" +
     "    <div class=\"player-avatar thumbnail\">\n" +

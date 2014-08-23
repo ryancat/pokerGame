@@ -19,6 +19,8 @@ angular
 
 .service('pokerGameSuitEnum', require('./js/services/pokerGameSuitEnumService'))
 .service('pokerGameKindEnum', require('./js/services/pokerGameKindEnumService'))
+.service('pokerGameSpeedEnum', require('./js/services/pokerGameSpeedEnumService'))
+.service('pokerGameCardsNumberEnum', require('./js/services/pokerGameCardsNumberEnumService'))
 .service('pokerGameMyCardsModal', require('./js/services/pokerGameMyCardsModalService'))
 .service('pokerGamePlayerListModal', require('./js/services/pokerGamePlayerListModalService'))
 .service('pokerGameCardTableModal', require('./js/services/pokerGameCardTableModalService'))

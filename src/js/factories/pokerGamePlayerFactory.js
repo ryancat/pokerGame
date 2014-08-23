@@ -17,7 +17,8 @@ module.exports = function (
             hasCards: [],
             playOrder: 1,
             isCurrentPlayer: false,
-            isHomePlayer: false
+            isHomePlayer: false,
+            nextPlayerId: ''
 
         }, playerConfig);
 
@@ -25,7 +26,6 @@ module.exports = function (
 
     PokerGamePlayerFactory.prototype = {
 
-        
 
     };
 

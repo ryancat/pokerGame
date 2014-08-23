@@ -16,7 +16,8 @@ module.exports = function (
 
         restrict: 'EA',
         scope: {
-            playerId: '='
+            playerId: '=',
+            isCurrentPlayer: '='
         },
         templateUrl: 'pokerGamePlayerTemplate.html',
         link: function (scope, element) {
@@ -26,8 +27,6 @@ module.exports = function (
                 pokerGameCardTableModal: pokerGameCardTableModal,
 
                 player: pokerGamePlayerListModal.getPlayerById(scope.playerId),
-
-                isCurrentPlayer: false
 
             });
 

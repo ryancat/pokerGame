@@ -9,7 +9,7 @@
     </ul>
 
     <button type="button" class="btn btn-primary" 
-        ng-disabled="!selectedCards.length"
+        ng-disabled="selectedCards.length == 0 || !homePlayer.isCurrentPlayer"
         ng-click="playCards()">
         Play Cards
     </button>
